@@ -513,76 +513,76 @@ WHERE SaleId NOT IN (SELECT SaleId FROM EventSeatSale)
 
 
 -- SELECT Statements
-SELECT V.Name AS Venue, E.Name AS Event, 
-	   CONVERT(VARCHAR, E.StartDate, 107) AS [Event Date],
-	   CONVERT(VARCHAR, E.StartDate, 108) AS [Start Time]
-FROM Event E INNER JOIN Venue V ON E.VenueId = V.Id
-WHERE E.StartDate > GETDATE();
+--SELECT V.Name AS Venue, E.Name AS Event, 
+--	   CONVERT(VARCHAR, E.StartDate, 107) AS [Event Date],
+--	   CONVERT(VARCHAR, E.StartDate, 108) AS [Start Time]
+--FROM Event E INNER JOIN Venue V ON E.VenueId = V.Id
+--WHERE E.StartDate > GETDATE();
 
 
-SELECT E.Name AS Event, Section.Name AS Section, R.RowNumber AS Row, COUNT(SeatNumber) AS [Seat Number]
-INTO #SoldSeatTempTable
-FROM EventSeatSale ESS
-	 INNER JOIN EventSeat ES ON ESS.EventSeatId = ES.EventSeatId
-	 INNER JOIN Seat ON Seat.SeatId = ES.SeatId
-	 RIGHT JOIN Row R ON R.RowId = Seat.RowId
-	 INNER JOIN Section ON Section.SectionId = R.SectionId,
-	 Event E
-WHERE E.EventId = @Beyonce
-GROUP BY E.Name, Section.Name, R.RowNumber
+--SELECT E.Name AS Event, Section.Name AS Section, R.RowNumber AS Row, COUNT(SeatNumber) AS [Seat Number]
+--INTO #SoldSeatTempTable
+--FROM EventSeatSale ESS
+--	 INNER JOIN EventSeat ES ON ESS.EventSeatId = ES.EventSeatId
+--	 INNER JOIN Seat ON Seat.SeatId = ES.SeatId
+--	 RIGHT JOIN Row R ON R.RowId = Seat.RowId
+--	 INNER JOIN Section ON Section.SectionId = R.SectionId,
+--	 Event E
+--WHERE E.EventId = @Beyonce
+--GROUP BY E.Name, Section.Name, R.RowNumber
 
 
-SELECT E.Name AS Event, Section.Name AS Section, RowNumber AS Row, COUNT(SeatNumber) AS [Seat Number]
-INTO #AllSeatTempTable
-FROM Event E
-INNER JOIN EventSeat ES ON E.EventId = ES.EventId
-INNER JOIN Seat ON Seat.SeatId = ES.SeatId
-INNER JOIN Row R ON R.RowId = Seat.RowId
-INNER JOIN Section ON Section.SectionId = R.SectionId
-WHERE E.EventId = @Beyonce
-GROUP BY E.Name, Section.Name, RowNumber;
+--SELECT E.Name AS Event, Section.Name AS Section, RowNumber AS Row, COUNT(SeatNumber) AS [Seat Number]
+--INTO #AllSeatTempTable
+--FROM Event E
+--INNER JOIN EventSeat ES ON E.EventId = ES.EventId
+--INNER JOIN Seat ON Seat.SeatId = ES.SeatId
+--INNER JOIN Row R ON R.RowId = Seat.RowId
+--INNER JOIN Section ON Section.SectionId = R.SectionId
+--WHERE E.EventId = @Beyonce
+--GROUP BY E.Name, Section.Name, RowNumber;
 
-SELECT ASTT.Event, ASTT.Section, ASTT.Row, ASTT.[Seat Number] - SSTT.[Seat Number] AS [Available Seats]
-FROM #AllSeatTempTable ASTT 
-	 INNER JOIN #SoldSeatTempTable SSTT ON ASTT.Event = SSTT.Event AND 
-												ASTT.Section = SSTT.Section AND 
-												ASTT.Row = SSTT.Row
-
-
-SELECT C.FirstName + ' ' + C.LastName AS [Customer], 
-	   E.Name AS Event, 
-	   Section.Name AS Section, 
-	   R.RowNumber AS Row,
-	   CONCAT(MIN(Seat.SeatNumber),' - ',MAX(Seat.SeatNumber))  AS Seats,
-	   FORMAT(SUM(ES.EventPrice + Seat.BasePrice), 'C') AS [Sale Price],
-	   Sale.PaymentType
-FROM EventSeatSale ESS
-	 INNER JOIN Sale ON Sale.SaleId = ESS.SaleId
-	 INNER JOIN Customer C ON C.CustomerId = Sale.CustomerId
-	 INNER JOIN EventSeat ES ON ESS.EventSeatId = ES.EventSeatId
-	 INNER JOIN Seat ON Seat.SeatId = ES.SeatId
-	 INNER JOIN Row R ON R.RowId = Seat.RowId
-	 INNER JOIN Section ON Section.SectionId = R.SectionId
-	 INNER JOIN Event E ON E.EventId = ES.EventId
-GROUP BY C.FirstName, C.LastName, E.Name, Section.Name, R.RowNumber, Sale.PaymentType
+--SELECT ASTT.Event, ASTT.Section, ASTT.Row, ASTT.[Seat Number] - SSTT.[Seat Number] AS [Available Seats]
+--FROM #AllSeatTempTable ASTT 
+--	 INNER JOIN #SoldSeatTempTable SSTT ON ASTT.Event = SSTT.Event AND 
+--												ASTT.Section = SSTT.Section AND 
+--												ASTT.Row = SSTT.Row
 
 
-SELECT C.FirstName + ' ' + C.LastName AS [Customer], 
-	   E.Name AS Event, 
-	   Section.Name AS Section, 
-	   R.RowNumber AS Row,
-	   STRING_AGG(Seat.SeatNumber, ',') WITHIN GROUP (ORDER BY Seat.SeatNumber) AS Seats,
-	   FORMAT(SUM(ES.EventPrice + Seat.BasePrice), 'C') AS [Sale Price],
-	   Sale.PaymentType
-FROM EventSeatSale ESS
-	 INNER JOIN Sale ON Sale.SaleId = ESS.SaleId
-	 INNER JOIN Customer C ON C.CustomerId = Sale.CustomerId
-	 INNER JOIN EventSeat ES ON ESS.EventSeatId = ES.EventSeatId
-	 INNER JOIN Seat ON Seat.SeatId = ES.SeatId
-	 INNER JOIN Row R ON R.RowId = Seat.RowId
-	 INNER JOIN Section ON Section.SectionId = R.SectionId
-	 INNER JOIN Event E ON E.EventId = ES.EventId
-GROUP BY C.FirstName, C.LastName, E.Name, Section.Name, R.RowNumber, Sale.PaymentType
+--SELECT C.FirstName + ' ' + C.LastName AS [Customer], 
+--	   E.Name AS Event, 
+--	   Section.Name AS Section, 
+--	   R.RowNumber AS Row,
+--	   CONCAT(MIN(Seat.SeatNumber),' - ',MAX(Seat.SeatNumber))  AS Seats,
+--	   FORMAT(SUM(ES.EventPrice + Seat.BasePrice), 'C') AS [Sale Price],
+--	   Sale.PaymentType
+--FROM EventSeatSale ESS
+--	 INNER JOIN Sale ON Sale.SaleId = ESS.SaleId
+--	 INNER JOIN Customer C ON C.CustomerId = Sale.CustomerId
+--	 INNER JOIN EventSeat ES ON ESS.EventSeatId = ES.EventSeatId
+--	 INNER JOIN Seat ON Seat.SeatId = ES.SeatId
+--	 INNER JOIN Row R ON R.RowId = Seat.RowId
+--	 INNER JOIN Section ON Section.SectionId = R.SectionId
+--	 INNER JOIN Event E ON E.EventId = ES.EventId
+--GROUP BY C.FirstName, C.LastName, E.Name, Section.Name, R.RowNumber, Sale.PaymentType
+
+
+--SELECT C.FirstName + ' ' + C.LastName AS [Customer], 
+--	   E.Name AS Event, 
+--	   Section.Name AS Section, 
+--	   R.RowNumber AS Row,
+--	   STRING_AGG(Seat.SeatNumber, ',') WITHIN GROUP (ORDER BY Seat.SeatNumber) AS Seats,
+--	   FORMAT(SUM(ES.EventPrice + Seat.BasePrice), 'C') AS [Sale Price],
+--	   Sale.PaymentType
+--FROM EventSeatSale ESS
+--	 INNER JOIN Sale ON Sale.SaleId = ESS.SaleId
+--	 INNER JOIN Customer C ON C.CustomerId = Sale.CustomerId
+--	 INNER JOIN EventSeat ES ON ESS.EventSeatId = ES.EventSeatId
+--	 INNER JOIN Seat ON Seat.SeatId = ES.SeatId
+--	 INNER JOIN Row R ON R.RowId = Seat.RowId
+--	 INNER JOIN Section ON Section.SectionId = R.SectionId
+--	 INNER JOIN Event E ON E.EventId = ES.EventId
+--GROUP BY C.FirstName, C.LastName, E.Name, Section.Name, R.RowNumber, Sale.PaymentType
 
 
 ---------------------------- Question 1 ----------------------------------
@@ -595,6 +595,8 @@ CREATE FUNCTION fnGetFullName(@firstName VARCHAR(20), @lastName VARCHAR(20))
 		RETURN @firstName + ' ' + @lastName;
 	END
 GO
+
+SELECT dbo.fnGetFullName('Steven','Lai') AS [Full Name]
 
 ------------------------------ Question 2 ----------------------------------
 DROP FUNCTION IF EXISTS fnGetTicketLabels
@@ -614,6 +616,14 @@ CREATE FUNCTION fnGetTicketLabels(@saleId UNIQUEIDENTIFIER)
 			 JOIN Event E ON E.EventId = ES.EventId
 		WHERE ESS.SaleId = @saleId
 GO
+
+DECLARE @saleIdParam UNIQUEIDENTIFIER = (SELECT SaleId 
+										 FROM Sale
+										 INNER JOIN Customer C ON C.CustomerId = Sale.CustomerId
+										 WHERE C.FirstName = 'Steve' AND C.LastName = 'Rogers');
+SELECT * 
+FROM fnGetTicketLabels(@saleIdParam)
+ORDER BY Result;
 
 ------------------------------ Question 3 ----------------------------------
 DROP FUNCTION IF EXISTS fnGetBlock
@@ -642,6 +652,12 @@ CREATE FUNCTION fnGetBlock(@saleId UNIQUEIDENTIFIER)
 	END
 GO
 
+DECLARE @saleIdParam UNIQUEIDENTIFIER = (SELECT SaleId 
+										 FROM Sale
+										 INNER JOIN Customer C ON C.CustomerId = Sale.CustomerId
+										 WHERE C.FirstName = 'Steve' AND C.LastName = 'Rogers');
+SELECT dbo.fnGetBlock(@saleIdParam) AS Result
+
 ------------------------------ Question 4 ----------------------------------
 DROP PROC IF EXISTS upcomingEventInfo
 GO
@@ -659,6 +675,8 @@ CREATE PROC upcomingEventInfo AS
 	WHERE E.StartDate > GETDATE() AND ESS.EventSeatId IS NULL
 	GROUP BY V.Name, E.Name, E.StartDate
 GO
+
+EXEC upcomingEventInfo;
 
 ------------------------------ Question 5 ----------------------------------
 DROP PROC IF EXISTS ticketInfo
@@ -688,3 +706,10 @@ CREATE PROC ticketInfo(@eventId UNIQUEIDENTIFIER) AS
 	GROUP BY Section.Name, R.RowNumber
 	ORDER BY Section.Name, R.RowNumber, [Seat Count]
 GO
+
+DECLARE @eventIdParam UNIQUEIDENTIFIER = (SELECT EventId 
+										  FROM Event
+										  WHERE Name = 'Beyonce'
+										  GROUP BY EventId);
+
+EXEC ticketInfo @eventIdParam;
